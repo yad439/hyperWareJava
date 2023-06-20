@@ -69,4 +69,9 @@ public class Utils {
 		val index=Arrays.binarySearch(array,value);
 		return index>=0 ? index : -index - 1;
 	}
+
+	public int binarySearchLess(final double[] array, double value){
+		val index=Arrays.binarySearch(array,value);
+		return index>=0 ? index : -index - 1;
+	}
 }

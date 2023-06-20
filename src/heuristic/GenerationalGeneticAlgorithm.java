@@ -14,20 +14,23 @@ import heuristic.util.Solution;
 import heuristic.util.SolutionAllocator;
 import lombok.AccessLevel;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
 
 import java.util.List;
 
+@SuppressWarnings("ClassWithTooManyFields")
+@ToString(onlyExplicitlyIncluded = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public final class GenerationalGeneticAlgorithm extends HeuristicAdapter {
-	@Setter BatchSelector selector = new BatchAdaptor(new TournamentSelector(2));
-	@Setter HeuristicChooser crossoverChooser = new RandomChooser();
-	@Setter SolutionMutator mutator = new MutateLSMutator();
-	@Setter Truncator truncator = new BestTruncator(false,true);
+	@Setter @ToString.Include BatchSelector selector = new BatchAdaptor(new TournamentSelector(2));
+	@Setter @ToString.Include HeuristicChooser crossoverChooser = new RandomChooser();
+	@Setter @ToString.Include SolutionMutator mutator = new MutateLSMutator();
+	@Setter @ToString.Include Truncator truncator = new BestTruncator(false,true);
 
-	@Setter int populationSize = 16;
-	@Setter int generationSize = 32;
+	@Setter @ToString.Include int populationSize = 16;
+	@Setter @ToString.Include int generationSize = 32;
 
 	List<Solution> population1 = null;
 	List<Solution> population2 = null;
@@ -37,11 +40,6 @@ public final class GenerationalGeneticAlgorithm extends HeuristicAdapter {
 
 	public GenerationalGeneticAlgorithm(final long seed) {
 		super(seed);
-	}
-
-	@Override
-	public String toString() {
-		return "Generational genetic algorithm";
 	}
 
 	@Override

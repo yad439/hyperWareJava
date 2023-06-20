@@ -5,18 +5,23 @@ import lombok.val;
 import java.lang.ref.Cleaner;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class NativeInstance implements Instance {
 	private static final Cleaner cleaner = Cleaner.create();
-	private static final AtomicBoolean isLoaded=new AtomicBoolean();
+	private static final Object lock = new Object();
+	private static boolean isLoaded = false;
 	private final long ptr;
 
 	NativeInstance(final JInstance jInstance) {
-		if(isLoaded.compareAndSet(false,true))
-			System.loadLibrary("warehouseInstance");
+		synchronized (lock) {
+			if (!isLoaded) {
+				System.loadLibrary("warehouseInstance");
+				isLoaded = true;
+			}
+		}
 
-		ptr = initialize(jInstance.jobCount(), jInstance.machineCount(), jInstance.carCount(), jInstance.carTravelTime(),
+		ptr = initialize(jInstance.jobCount(), jInstance.machineCount(), jInstance.carCount(),
+		                 jInstance.carTravelTime(),
 		                 jInstance.itemCount(), jInstance.bufferSize(), jInstance.jobLengths(),
 		                 Arrays.stream(jInstance.itemsNeeded())
 		                       .map(job -> job.stream().toArray())
@@ -42,9 +47,9 @@ public final class NativeInstance implements Instance {
 
 	@Override
 	public BitSet[] itemsNeeded() {
-		return Arrays.stream(itemsNeededNative(ptr)).map(job->{
-			val set=new BitSet();
-			for(final var i:job)set.set(i);
+		return Arrays.stream(itemsNeededNative(ptr)).map(job -> {
+			val set = new BitSet();
+			for (final var i : job) set.set(i);
 			return set;
 		}).toArray(BitSet[]::new);
 	}

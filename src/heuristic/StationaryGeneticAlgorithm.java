@@ -15,6 +15,7 @@ import heuristic.solutionselector.TournamentSelector;
 import heuristic.util.Solution;
 import heuristic.util.SolutionAllocator;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.val;
 import util.NestedWriter;
 import util.StatisticPrinter;
@@ -23,30 +24,40 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@ToString(onlyExplicitlyIncluded = true)
 @SuppressWarnings("ClassWithTooManyFields")
 public final class StationaryGeneticAlgorithm extends HeuristicAdapter implements StatisticPrinter {
 
 	@Setter
+	@ToString.Include
 	private double depthOfSearch = 1.0;
 	@Setter
+	@ToString.Include
 	private double intensityOfMutation = 0.5;
 	@Setter
+	@ToString.Include
 	private HeuristicChooser localChooser = new ImproveToTimeChooserExt();
 	@Setter
+	@ToString.Include
 	private HeuristicChooser mutationChooser = new MeanImproveChooserExt();
 	@Setter
+	@ToString.Include
 	private HeuristicChooser crossoverChooser = new MeanImproveChooserExt();
 	private Solution[] population = null;
 	private Solution tempSolution1 = null;
 	private Solution tempSolution2 = null;
 	@Setter
+	@ToString.Include
 	private Acceptor acceptor = new AlwaysAccept();
 	private Map<Solution, Acceptor> acceptors = null;
 	@Setter
+	@ToString.Include
 	private SolutionSelector firstSelector = new TournamentSelector(2);
 	@Setter
+	@ToString.Include
 	private SolutionSelector secondSelector = firstSelector;
 	@Setter
+	@ToString.Include
 	private SolutionReplaceSelector solutionReplacer = new WorstReplacer();
 
 	public StationaryGeneticAlgorithm(final long seed) {super(seed);}
@@ -125,9 +136,6 @@ public final class StationaryGeneticAlgorithm extends HeuristicAdapter implement
 		if (acceptors.get(toReplace).shouldAccept(tempSolution2.value(), toReplace.value(), false, getProgress()))
 			tempSolution2.copyTo(toReplace);
 	}
-
-	@Override
-	public String toString() {return "Stationary genetic algorithm";}
 
 	@Override
 	public void printStats(final NestedWriter output) {

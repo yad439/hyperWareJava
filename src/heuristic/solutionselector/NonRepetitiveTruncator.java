@@ -18,7 +18,7 @@ import java.util.random.RandomGenerator;
 public final class NonRepetitiveTruncator extends AbstractTruncator {
 	private final SolutionSelector selector;
 
-	NonRepetitiveTruncator(final SolutionSelector selector, final boolean usePrevious, final boolean alwaysUseBest) {
+	public NonRepetitiveTruncator(final SolutionSelector selector, final boolean usePrevious, final boolean alwaysUseBest) {
 		super(usePrevious, alwaysUseBest);
 		this.selector = selector;
 	}

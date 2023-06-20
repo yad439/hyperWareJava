@@ -1,5 +1,6 @@
 import heuristic.GenerationalGeneticAlgorithm;
 import lombok.val;
+import org.apache.commons.io.input.BoundedInputStream;
 import util.Json;
 import warehouse.WarehouseScheduling;
 
@@ -10,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import java.util.random.RandomGenerator;
@@ -21,7 +23,7 @@ public final class ServerListener {
 		val threadPool = Executors.newCachedThreadPool();
 		try (val server = new ServerSocket(7681)) {
 			while (true) {
-				val connection = server.accept();
+				@SuppressWarnings("SocketOpenedButNotSafelyClosed") val connection = server.accept();
 				threadPool.submit(() -> serve(connection));
 			}
 		} catch (final IOException e) {
@@ -33,11 +35,13 @@ public final class ServerListener {
 	private static void serve(final Socket connection) {
 		try (connection) {
 			System.out.println("connected");
-			val request = Json.parse(new InputStreamReader(new BufferedInputStream(connection.getInputStream()),
+			val input = new BufferedInputStream(connection.getInputStream());
+			val size = ByteBuffer.wrap(input.readNBytes(2)).getShort();
+			val request = Json.parse(new InputStreamReader(new BoundedInputStream(input, size),
 			                                               StandardCharsets.UTF_8));
 			System.out.println("run");
 			val rng = RandomGenerator.getDefault();
-			val domain = new WarehouseScheduling(rng.nextInt(), false);
+			val domain = new WarehouseScheduling(rng.nextInt(), true);
 			domain.loadInstance(26);
 			final var depth = request.getDouble("depth");
 			final var intensity = request.getDouble("intensity");

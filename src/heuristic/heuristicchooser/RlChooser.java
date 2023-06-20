@@ -2,17 +2,21 @@ package heuristic.heuristicchooser;
 
 import com.github.chen0040.rl.learning.qlearn.QLearner;
 import lombok.ToString;
+import lombok.val;
 import util.NestedWriter;
+import util.Stateful;
 
 import java.util.random.RandomGenerator;
 
 @ToString
-public final class RlChooser implements HeuristicChooser {
+public final class RlChooser implements HeuristicChooser, Stateful<RlChooser> {
+	private RandomGenerator rng;
 	private QLearner agent=null;
 
 	@Override
 	public void init(final RandomGenerator rng, final int candidatesNumber) {
-		agent=new QLearner(candidatesNumber+1, candidatesNumber);
+		this.rng=rng;
+		if(agent==null)agent=new QLearner(candidatesNumber+1, candidatesNumber);
 	}
 
 	@Override
@@ -21,7 +25,9 @@ public final class RlChooser implements HeuristicChooser {
 	}
 
 	public int choose(final double progress, final int previous) {
-		return agent.selectAction(previous+1).getIndex();
+		val index = agent.selectAction(previous + 1).getIndex();
+		if(index==-1) return rng.nextInt(agent.getModel().getActionCount());
+		return index;
 	}
 
 	@Override
@@ -34,7 +40,23 @@ public final class RlChooser implements HeuristicChooser {
 	}
 
 	@Override
+	public RlChooser copySettings() {
+		return new RlChooser();
+	}
+
+	@Override
+	public RlChooser copyState() {
+		val result=new RlChooser();
+		result.agent=agent.makeCopy();
+		return result;
+	}
+
+	@Override
 	public void printStats(final NestedWriter output) {
-		output.println(toString());
+		output.print(toString());
+		output.println('{');
+		val scoped=output.getScoped();
+		scoped.formatLine("agent_Q = %s",agent.getModel().getQ());
+		output.printLine('}');
 	}
 }

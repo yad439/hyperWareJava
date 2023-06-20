@@ -73,7 +73,7 @@ public final class PopulationExhaustiveHeuristic extends ExtendedHyperHeuristic 
 			final var localChooser = new RankBasedChooser(rng, localSearches.length);
 			var prevScore = oldScore;
 			var globalSame = true;
-			while (true) {
+			while (!hasTimeExpired()) {
 				final var localHeuristic = localChooser.choose(getProgress());
 				if (localHeuristic == -1) break;
 				final var localSearch = localSearches[localHeuristic];

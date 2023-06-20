@@ -16,6 +16,7 @@ import heuristic.util.Solution;
 import heuristic.util.SolutionAllocator;
 import heuristic.util.Utils;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.val;
 import util.NestedWriter;
 import util.StatisticPrinter;
@@ -26,21 +27,22 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+@ToString(onlyExplicitlyIncluded = true)
 public final class PopulationBasedStagedHeuristic extends HeuristicAdapter implements StatisticPrinter {
 
 	private Solution newSolution = null;
 	private Solution[] population = null;
 
-	@Setter
+	@Setter @ToString.Include
 	private SolutionMutator[] mutators = {new MutateLSMutator(true), new MutateLSMutator(false)};
-	@Setter
+	@Setter @ToString.Include
 	private int[] thresholds = {5};
-	@Setter
+	@Setter @ToString.Include
 	private HeuristicChooser crossChooser = new RandomChooser();
-	@Setter
+	@Setter @ToString.Include
 	private SolutionSelector crossSelector = new RandomSelector();
 	private Map<Solution, Acceptor> solutionToAcceptor = null;
-	@Setter
+	@Setter @ToString.Include
 	private SolutionSelector solutionChooser = new MultipleSelector(
 			new SolutionSelector[]{new WorstSelector(), new BestSelector()},
 			new double[]{0.7}
@@ -49,14 +51,14 @@ public final class PopulationBasedStagedHeuristic extends HeuristicAdapter imple
 	private int[] withoutImprovement = null;
 	private double[] bests = null;
 
-	@Setter
+	@Setter @ToString.Include
 	private Supplier<? extends Acceptor> acceptorFactory = AillaAcceptor::new;
-	@Setter
+	@Setter @ToString.Include
 	private int withoutImprovementLimit = 100;
 
-	@Setter
+	@Setter @ToString.Include
 	private double depthOfSearch = 1.0;
-	@Setter
+	@Setter @ToString.Include
 	private double intensityOfMutation = 0.8;
 
 	public PopulationBasedStagedHeuristic(final long seed) {super(seed);}
@@ -143,13 +145,8 @@ public final class PopulationBasedStagedHeuristic extends HeuristicAdapter imple
 	}
 
 	@Override
-	public String toString() {
-		return "Population based staged heuristic";
-	}
-
-	@Override
 	public void printStats(final NestedWriter output) {
-		output.println("Population based heuristic");
+		output.println("Population based staged heuristic");
 		val scoped = output.getScoped();
 		scoped.formatLine("depth of search: %s, intensity of mutation: %s", depthOfSearch, intensityOfMutation);
 		scoped.formatLine("without improvement limit: %d", withoutImprovementLimit);

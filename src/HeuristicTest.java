@@ -1,6 +1,7 @@
 import heuristic.PopulationBasedHeuristic;
-import heuristic.mutator.MutationOnlyMutator;
+import heuristic.mutator.RlMutator;
 import lombok.val;
+import util.NestedWriter;
 import warehouse.WarehouseScheduling;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public final class HeuristicTest {
 
 		final var rng = RandomGenerator.getDefault();
 //		final var problem = new TSP(1234);
-		final var problem = new WarehouseScheduling(rng.nextLong(), true);
+		final var problem = new WarehouseScheduling(rng.nextLong(), false);
 		problem.loadInstance(26);
 
 		/*final var heuristics = new ExtendedHyperHeuristic[]{
@@ -45,7 +46,7 @@ public final class HeuristicTest {
 //new RlHeuristic()
 		};*/
 //		val heuristic=new StationaryGeneticAlgorithm(rng.nextLong());
-		val heuristic=new PopulationBasedHeuristic(rng.nextLong()).setMutator(new MutationOnlyMutator());
+		val heuristic=new PopulationBasedHeuristic(rng.nextLong()).setMutator(new RlMutator(4,false));
 //		val heuristic=new AnnealingListHeuristic(rng.nextLong());
 		final var systemWriter = new PrintWriter(System.out, false, Charset.defaultCharset());
 //		for (final var heuristic : heuristics) {
@@ -63,6 +64,7 @@ public final class HeuristicTest {
 			System.out.print(time);
 			System.out.print(' ');
 			System.out.println(elapsed);
+			heuristic.printStats(new NestedWriter(systemWriter));
 //			System.out.println(Arrays.toString(problem.getHeuristicCallRecord()));
 //			System.out.println(Arrays.toString(problem.getheuristicCallTimeRecord()));
 //			problem.printStats(systemWriter);

@@ -15,6 +15,7 @@ import heuristic.solutionselector.WorstSelector;
 import heuristic.util.Solution;
 import heuristic.util.SolutionAllocator;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.val;
 import util.NestedWriter;
 import util.StatisticPrinter;
@@ -25,19 +26,24 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+@ToString(onlyExplicitlyIncluded = true)
 public final class PopulationBasedHeuristic extends HeuristicAdapter implements StatisticPrinter {
 
 	private Solution newSolution = null;
 	private Solution[] population = null;
 
 	@Setter
+	@ToString.Include
 	private SolutionMutator mutator = new MutateLSMutator();
 	@Setter
+	@ToString.Include
 	private HeuristicChooser crossChooser = new RandomChooser();
 	@Setter
+	@ToString.Include
 	private SolutionSelector crossSelector = new RandomSelector();
 	private Map<Solution, Acceptor> solutionToAcceptor = null;
 	@Setter
+	@ToString.Include
 	private SolutionSelector solutionChooser = new MultipleSelector(
 			new SolutionSelector[]{new WorstSelector(), new BestSelector()},
 			new double[]{0.7}
@@ -47,12 +53,18 @@ public final class PopulationBasedHeuristic extends HeuristicAdapter implements 
 	private double[] bests = null;
 
 	@Setter
-	private Supplier< ? extends Acceptor> acceptorFactory = AillaAcceptor::new;
+	@ToString.Include
+	private Supplier<? extends Acceptor> acceptorFactory = AillaAcceptor::new;
 	@Setter
+	@ToString.Include
 	private int withoutImprovementLimit = 10;
 
-	@Setter private double depthOfSearch=1.0;
-	@Setter private double intensityOfMutation=0.8;
+	@Setter
+	@ToString.Include
+	private double depthOfSearch = 1.0;
+	@Setter
+	@ToString.Include
+	private double intensityOfMutation = 0.8;
 
 	public PopulationBasedHeuristic(final long seed) {super(seed);}
 
@@ -79,7 +91,7 @@ public final class PopulationBasedHeuristic extends HeuristicAdapter implements 
 		final var acceptors = IntStream.range(0, population.length)
 		                               .mapToObj(i -> acceptorFactory.get())
 		                               .toList();
-		for(final var acceptor:acceptors)acceptor.init(rng);
+		for (final var acceptor : acceptors) acceptor.init(rng);
 		solutionToAcceptor = new HashMap<>(population.length);
 		newSolution.initialize();
 
@@ -136,16 +148,11 @@ public final class PopulationBasedHeuristic extends HeuristicAdapter implements 
 	}
 
 	@Override
-	public String toString() {
-		return "Population based heuristic";
-	}
-
-	@Override
 	public void printStats(final NestedWriter output) {
 		output.println("Population based heuristic");
-		val scoped=output.getScoped();
-		scoped.formatLine("depth of search: %s, intensity of mutation: %s",depthOfSearch,intensityOfMutation);
-		scoped.formatLine("without improvement limit: %d",withoutImprovementLimit);
+		val scoped = output.getScoped();
+		scoped.formatLine("depth of search: %s, intensity of mutation: %s", depthOfSearch, intensityOfMutation);
+		scoped.formatLine("without improvement limit: %d", withoutImprovementLimit);
 		scoped.printIndented("mutator: ");
 		mutator.printStats(scoped);
 		scoped.printIndented("crossover chooser: ");
@@ -156,14 +163,15 @@ public final class PopulationBasedHeuristic extends HeuristicAdapter implements 
 		crossSelector.printStats(scoped);
 		scoped.printLine("acceptors: [");
 		{
-			val arrScoped=scoped.getScoped();
-			for(final var acceptor:solutionToAcceptor.values()){
+			val arrScoped = scoped.getScoped();
+			for (final var acceptor : solutionToAcceptor.values()) {
 				arrScoped.indent();
 				acceptor.printStats(arrScoped);
 			}
 		}
-		scoped.formatLine("without improvement: %s",Arrays.toString(withoutImprovement));
-		scoped.formatLine("bests: %s",Arrays.toString(bests));
-		scoped.formatLine("population: %s",Arrays.toString(Arrays.stream(population).mapToDouble(Solution::value).toArray()));
+		scoped.formatLine("without improvement: %s", Arrays.toString(withoutImprovement));
+		scoped.formatLine("bests: %s", Arrays.toString(bests));
+		scoped.formatLine("population: %s",
+		                  Arrays.toString(Arrays.stream(population).mapToDouble(Solution::value).toArray()));
 	}
 }

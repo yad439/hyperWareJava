@@ -7,7 +7,7 @@ import lombok.Setter;
 public class StatefulSolution extends Solution {
 	@Getter
 	@Setter
-	private State state = State.UNKNOWN;
+	private int state = -1;
 
 	public StatefulSolution(final ProblemDomain domain, final int solutionIndex) {
 		super(domain, solutionIndex);
@@ -16,13 +16,11 @@ public class StatefulSolution extends Solution {
 	@Override
 	public void initialize() {
 		super.initialize();
-		state=State.INITIALIZED;
+		state= 0;
 	}
 	@Override
 	public void copyTo(final Solution other) {
 		super.copyTo(other);
-		if(other instanceof StatefulSolution stateful)stateful.state=state;
+		if(other instanceof StatefulSolution stateful) stateful.state=state;
 	}
-
-	public enum State {UNKNOWN, INITIALIZED, MUTATED, CROSSED, LOCAL_OPT, STUCK}
 }

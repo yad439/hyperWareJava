@@ -6,7 +6,7 @@ import heuristic.acceptor.AillaAcceptor;
 import heuristic.heuristicchooser.HeuristicChooser;
 import heuristic.heuristicchooser.ImproveToTimeChooser;
 import heuristic.util.SolutionAllocator;
-import heuristic.util.StatefulSolution;
+import heuristic.util.EnumStatefulSolution;
 import lombok.val;
 
 import java.util.EnumMap;
@@ -32,8 +32,8 @@ public final class UntypedHeuristic extends ExtendedHyperHeuristic {
 //		final var localChooser = new ImproveToTimeChooserExt(rng, localSearches.length);
 //		final var chooser = new LrpChooser(rng, domain.getNumberOfHeuristics());
 //		final var chooser = new RlChooser(domain.getNumberOfHeuristics());
-		val choosers=new EnumMap<StatefulSolution.State, HeuristicChooser>(StatefulSolution.State.class);
-		for(final var state:StatefulSolution.State.values()){
+		val choosers=new EnumMap<EnumStatefulSolution.State, HeuristicChooser>(EnumStatefulSolution.State.class);
+		for(final var state: EnumStatefulSolution.State.values()){
 			val chooser=new ImproveToTimeChooser(true);
 			chooser.init(rng, domain.getNumberOfHeuristics());
 			choosers.put(state,chooser);

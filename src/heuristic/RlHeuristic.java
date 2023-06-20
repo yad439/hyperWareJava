@@ -6,6 +6,7 @@ import extension.ExtendedHyperHeuristic;
 import heuristic.acceptor.ContinuousAnnealingAcceptor;
 import heuristic.util.HeuristicImpl;
 import heuristic.util.SolutionAllocator;
+import lombok.val;
 
 import java.util.ArrayDeque;
 import java.util.stream.IntStream;
@@ -31,7 +32,8 @@ public final class RlHeuristic extends ExtendedHyperHeuristic {
 		final var states=new ArrayDeque<Integer>(11);
 		currentScores.add(currentSolution.value());
 		while (!hasTimeExpired()){
-			final var heuristicNum=chooser.selectAction(withoutImprovement,null).getIndex();
+			final var heuristicNumC=chooser.selectAction(withoutImprovement,null).getIndex();
+			val heuristicNum=heuristicNumC!=-1?heuristicNumC:rng.nextInt(totalNum);
 			final var heuristic=heuristics.get(heuristicNum);
 			heuristic.apply(currentSolution,newSolution);
 			states.add(withoutImprovement);

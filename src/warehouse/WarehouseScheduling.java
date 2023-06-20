@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 
 @SuppressWarnings({"ClassWithTooManyMethods", "ClassNamePrefixedWithPackageName"})
 public final class WarehouseScheduling extends ExtendedProblemDomain {
-	private static final Path DATA_DIR = Path.of("data", "warehouse");
+	private final Path dataDir;
 	private static final int HEURISTIC_NUMBER = 30;
 	private final Heuristic[] heuristics;
 	private final CrossHeuristic[] crossoverHeuristics;
@@ -26,11 +26,20 @@ public final class WarehouseScheduling extends ExtendedProblemDomain {
 	private int bestValue = Integer.MAX_VALUE;
 
 	@Deprecated
-	public WarehouseScheduling(final long seed) {this(seed, false);}
+	public WarehouseScheduling(final long seed) {this(seed, false, null);}
 
-	public WarehouseScheduling(final long seed, final boolean isNative) {
+	public WarehouseScheduling(final long seed, final boolean isNative) {this(seed, isNative, null);}
+
+	public WarehouseScheduling(final long seed, final boolean isNative, final String dataDir) {
 		super(seed);
 		this.isNative = isNative;
+		if (dataDir != null) this.dataDir = Path.of(dataDir);
+		else {
+			val env = System.getenv("WARE_DATA");
+			val relative = Path.of("data", "instances");
+			if (env == null) this.dataDir = relative;
+			else this.dataDir = Path.of(env).resolve(relative);
+		}
 		heuristicService = new Heuristics(rng);
 		heuristicService.setIntensity(getIntensityOfMutation());
 		heuristicService.setDepth(getDepthOfSearch());
@@ -186,7 +195,7 @@ public final class WarehouseScheduling extends ExtendedProblemDomain {
 
 	@Override
 	public int getNumberOfInstances() {
-		try (final var files = Files.list(DATA_DIR)) {
+		try (final var files = Files.list(dataDir)) {
 			//noinspection NumericCastThatLosesPrecision
 			return (int) files.count();
 		} catch (final IOException e) {
@@ -287,7 +296,7 @@ public final class WarehouseScheduling extends ExtendedProblemDomain {
 		//noinspection VariableNotUsedInsideIf
 		if (instance != null) reset();
 		//noinspection AutoBoxing
-		final var dataPath = DATA_DIR.resolve(String.format("%d.txt", i + 1));
+		final var dataPath = dataDir.resolve(String.format("%d.dat", i));
 		try {
 			if (Files.exists(dataPath)) {
 				val jInstance = InstanceParser.parse(dataPath);

@@ -76,6 +76,7 @@ public class RlMutator extends SolutionMutator {
 	@Override
 	protected void initInner(final RandomGenerator rng, final Solution[] population) {
 		heuristics = Stream.concat(Arrays.stream(allMutations), Arrays.stream(localSearches)).toList();
+		chooser.init(rng, heuristics.size());
 	}
 
 	@Override

@@ -38,7 +38,7 @@ final class InstanceParser {
 		for(var i=0;i<jobCount;i++){
 			final var count= input.nextInt();
 			final var set=new BitSet(count);
-			for(var j=0;j<count;j++)set.set(input.nextInt() - 1);
+			for(var j=0;j<count;j++)set.set(input.nextInt());
 			itemsNeeded[i]=set;
 		}
 		return new JInstance(jobCount, machineCount, carCount, travelTime, itemCount, bufferSize, jobLengths,

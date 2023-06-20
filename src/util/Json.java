@@ -2,11 +2,12 @@ package util;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
 
@@ -14,17 +15,27 @@ import java.util.Arrays;
 public final class Json {
 	private final JSONObject inner;
 
-	@SneakyThrows
 	public static Json parse(final String str){
 		val parser=new JSONParser();
-		val inner=(JSONObject) parser.parse(str);
+		JSONObject inner= null;
+		try {
+			inner = (JSONObject) parser.parse(str);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 		return new Json(inner);
 	}
 
-	@SneakyThrows
 	public static Json parse(final Reader reader){
 		val parser=new JSONParser();
-		val inner=(JSONObject) parser.parse(reader);
+		JSONObject inner= null;
+		try {
+			inner = (JSONObject) parser.parse(reader);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 		return new Json(inner);
 	}
 

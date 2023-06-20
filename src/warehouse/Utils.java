@@ -106,13 +106,15 @@ final class Utils {
 					if (sortReturns) {
 						for (var i = 0; i < minLocksLen; i++) {
 							final var item = minLocks[i];
-							var nxt = -1;
-							for (var j = ind + 1; j < permutation.length; j++)
-								if (problem.itemsNeeded()[j].get(item)) {
-									nxt = j;
-									break;
-								}
-							nexts[item] = nxt == -1 ? Integer.MAX_VALUE : nxt;
+							if(nexts[item] <= ind){
+								var nxt = -1;
+								for (var j = ind + 1; j < permutation.length; j++)
+									if (problem.itemsNeeded()[j].get(item)) {
+										nxt = j;
+										break;
+									}
+								nexts[item] = nxt == -1 ? permutation.length : nxt;
+							}
 						}
 						Primitive.sort(minLocks, 0, minLocksLen, byNextComparator, false);
 					}
